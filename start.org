@@ -1,6 +1,7 @@
-#+TITLE: Emacs 24 configuration for Mason Stewart
-#+AUTHOR: Mason Stewart
-#+EMAIL: masondesu@gmail.com
+
+#+TITLE: Emacs 24 configuration for Hunter Stewart
+#+AUTHOR: Hunter Stewart
+#+EMAIL: hunterdesu@gmail.com
 #+OPTIONS: toc:2 num:nil
 
 * Introduction
@@ -23,8 +24,8 @@
    environment. I prefer to be explicit about it.
 
 #+BEGIN_SRC emacs-lisp
-    (setq user-full-name "Mason Stewart")
-    (setq user-mail-address "masondesu@gmail.com")
+    (setq user-full-name "Hunter Stewart")
+    (setq user-mail-address "hetre85@gmail.com")
 #+END_SRC
 
 * Must-Have Configuration
@@ -228,8 +229,9 @@
                          auto-complete
                          autopair
                          cider
-                         clojure-mode
+                         clojure-mode 
                          coffee-mode
+                         company
                          cperl-mode
                          deft
                          diminish
@@ -238,15 +240,17 @@
                          flymake
                          flymake-cursor
                          flymake-python-pyflakes
+                         flymake-ruby
                          go-mode
                          god-mode
                          gist
                          git-gutter
                          haml-mode
                          htmlize
-                         hy-mode
+                         hy-mode 
                          ido-ubiquitous
                          inf-mongo
+                         inf-ruby
                          jinja2-mode
                          mac-key-mode
                          magit
@@ -261,11 +265,13 @@
                          phoenix-dark-pink-theme
                          pony-mode
                          projectile
+                         projectile-rails
                          projectile-speedbar
                          python-mode
                          qsimpleq-theme
                          redo+
                          rainbow-delimiters
+                         robe
                          sass-mode
                          scss-mode
                          smex
@@ -476,8 +482,9 @@ I want to be able to use [[http://ditaa.sourceforge.net/][ditaa]] and Clojure in
     ;; Make the window title reflect the current buffer.
     (setq frame-title-format '(buffer-file-name "%f" ("%b")))
     ;; Load my favorite color theme. By passing t as the second parameter,
+
     ;; we are not prompted to set the theme as safe.
-    (load-theme 'noctilux t)
+    (load-theme 'hipster t)
     ;; full screen window on start plz
     (set-frame-size (selected-frame) 202 190)
     (set-frame-position (selected-frame) 2 0))
@@ -488,6 +495,7 @@ I want to be able to use [[http://ditaa.sourceforge.net/][ditaa]] and Clojure in
 
   ;; omg git gutter yes plz
   (global-git-gutter-mode +1)
+
 #+END_SRC
 
 ** Modeline Improvements
@@ -526,6 +534,12 @@ I want to be able to use [[http://ditaa.sourceforge.net/][ditaa]] and Clojure in
 
   (set-face-background 'speedbar-highlight-face "#000000")
   (set-face-foreground 'speedbar-highlight-face "#26AFEB")
+#+END_SRC
+
+  Don't create lock files. I don't want to just gitgnore this right now so I 
+  am adding it here. Maybe one day I'll want lock file but not right now.
+#+BEING_SRC emacs-lisp
+  (setq create-lockfiles nil)
 #+END_SRC
 
 * Shells
@@ -816,8 +830,36 @@ I should figure out.
               (define-key ruby-mode-map "{" 'self-insert-command)
               (define-key ruby-mode-map "}" 'self-insert-command)
               (define-key ruby-mode-map (kbd "RET") 'newline-and-indent)))
+  
+  (require 'flymake-ruby)
+  (add-hook 'ruby-mode-hook 'flymake-ruby-load)
+  (add-hook 'ruby-mode-hook 'projectile-mode)
+  (add-hook 'projectile-mode-hook 'projectile-rails-on)
+
+  (autoload 'inf-ruby "inf-ruby" "Run an inferior Ruby process" t)
+    (add-hook 'ruby-mode-hook 'inf-ruby-minor-mode)  
+
+  ;; RVM stuff
+  (require 'rvm)
+  (rvm-use-default)
+  
+  ;; Robe 
+  (require 'robe)
+  (add-hook 'ruby-mode-hook 'robe-mode)
+
+  ;; now you can type robe-start and get company-robe intellisense
+  (global-company-mode t)
+  (push 'company-robe company-backends)
+
+  ;; Automatically activate the right rvm gemset and ruby version
+  (defadvice inf-ruby-console-auto (before activate-rvm-for-robe activate)
+    (rvm-activate-corresponding-ruby))
+
+  ;; Use rainbows in all programming modes
+  (add-hook 'ruby-mode-hook #'rainbow-delimiters-mode)
+  
 #+END_SRC
-   
+
 ** Scheme
 
 #+BEGIN_SRC emacs-lisp
@@ -1047,3 +1089,4 @@ I should figure out.
 #+END_SRC
 
 
+  
