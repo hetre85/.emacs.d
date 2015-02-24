@@ -234,6 +234,7 @@
                          deft
                          diminish
                          elisp-slime-nav
+                         fiplr
                          flymake
                          flymake-cursor
                          flymake-python-pyflakes
